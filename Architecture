@@ -1,0 +1,17 @@
+## Architecture Decisions
+
+### Why MVC?
+I used the MVC pattern to separate concerns:
+- Models handle data
+- Views handle UI
+- Controllers handle logic
+
+This improves maintainability and scalability.
+
+### Why Middleware?
+Middleware is used for:
+- Authentication checks
+- Validation
+- Error handling
+
+This avoids code duplication.
