@@ -15,3 +15,12 @@ Middleware is used for:
 - Error handling
 
 This avoids code duplication.
+
+### Multiple Images
+Ideally it is not good to store images in mongoDB.So if a user want to upload any images i.e., more than one image for a campground, cloud is better.
+Initially using Cloudinary for simplicity.
+**Later migrating to AWS S3 to understand cloud storage.**
+
+
+
+
