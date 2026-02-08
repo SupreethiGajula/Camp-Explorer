@@ -27,7 +27,7 @@ const helmet = require('helmet');
 /////////////////////////////////////////////
 // 'mongodb://localhost:27017/yelp-camp'
 //process.env.MongoDBURL
-mongoose.connect('mongodb://localhost:27017/yelp-camp',{
+mongoose.connect(process.env.MongoDBURL,{
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
@@ -110,7 +110,7 @@ app.use(sanitizeV5({ replaceWith: '_' }));//to prevent mongo-injection attack
 //setting up mongo to store information about the session 
 //------------------------------
 const store = MongoStore.create({
-    mongoUrl: 'mongodb://localhost:27017/yelp-camp',
+    mongoUrl: process.env.MongoDBURL,
     touchAfter: 24 * 60 * 60, //this is timr in seconds
     crypto: {
         secret: 'thisshouldbeabettersecret!'
