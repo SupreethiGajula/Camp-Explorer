@@ -18,7 +18,7 @@ const reviewroutes = require('./Routes/reviewroutes.js');
 const authroutes = require('./Routes/authroutes.js');
 const { Cookie } = require('express-session');
 const session = require('express-session');
-const  MongoStore  = require('connect-mongo');
+const { MongoStore}  = require('connect-mongo');
 const flash = require('connect-flash')
 const user = require('./models/user');
 const passport  = require('passport');
@@ -130,7 +130,8 @@ const sessionConfig = {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // only true in prod
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
-        maxAge: 1000 * 60 * 60 * 24 * 7
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        sameSite: 'none' 
     }
 };
 app.use(session(sessionConfig));

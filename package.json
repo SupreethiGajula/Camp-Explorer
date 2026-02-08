@@ -1,4 +1,12 @@
 {
+  "name": "camp-explorer",
+  "version": "1.0.0",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
   "dependencies": {
     "@maptiler/client": "^2.5.0",
     "cloudinary": "^1.41.3",
