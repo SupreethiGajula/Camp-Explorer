@@ -1,11 +1,13 @@
 if(process.env.NODE_ENV!=="production"){
     require('dotenv').config();
 }
+const sanitizeV5 = require('./Utils/mongoSanitizeV5.js');
 
 const express = require('express');
 const app = express();
+app.set('query parser', 'extended');
 const path = require('path');
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); 
 const methodoverride = require('method-override');
 const morgan = require('morgan');
 const ejsMate = require('ejs-mate');
@@ -16,11 +18,15 @@ const reviewroutes = require('./Routes/reviewroutes.js');
 const authroutes = require('./Routes/authroutes.js');
 const { Cookie } = require('express-session');
 const session = require('express-session');
+const { MongoStore } = require('connect-mongo');
 const flash = require('connect-flash')
 const user = require('./models/user');
 const passport  = require('passport');
 const LocalStrategy = require('passport-local');
+const helmet = require('helmet');
 /////////////////////////////////////////////
+// 'mongodb://localhost:27017/yelp-camp'
+//process.env.MongoDBURL
 mongoose.connect('mongodb://localhost:27017/yelp-camp',{
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -35,6 +41,57 @@ db.once('open',function(){
 ////////////////////////////////////////////middleware
 app.engine('ejs', ejsMate);
 app.use(morgan('tiny'));
+app.use(helmet());
+//the below code is to configure for the content security policy 
+//to tell the app to use which fonts,which images can be allowed etc.
+const scriptSrcUrls = [
+    "https://stackpath.bootstrapcdn.com/",
+    // "https://api.tiles.mapbox.com/",
+    // "https://api.mapbox.com/",
+    "https://kit.fontawesome.com/",
+    "https://cdnjs.cloudflare.com/",
+    "https://cdn.jsdelivr.net",
+    "https://cdn.maptiler.com/", // add this
+];
+const styleSrcUrls = [
+    "https://kit-free.fontawesome.com/",
+    "https://stackpath.bootstrapcdn.com/",
+    // "https://api.mapbox.com/",
+    // "https://api.tiles.mapbox.com/",
+    "https://fonts.googleapis.com/",
+    "https://use.fontawesome.com/",
+    "https://cdn.jsdelivr.net",
+    "https://cdn.maptiler.com/", // add this
+];
+const connectSrcUrls = [
+    // "https://api.mapbox.com/",
+    // "https://a.tiles.mapbox.com/",
+    // "https://b.tiles.mapbox.com/",
+    // "https://events.mapbox.com/",
+    "https://api.maptiler.com/", // add this
+];
+const fontSrcUrls = [];
+app.use(
+    helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: [],
+            connectSrc: ["'self'", ...connectSrcUrls],
+            scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+            styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+            workerSrc: ["'self'", "blob:"],
+            objectSrc: [],
+            imgSrc: [
+                "'self'",
+                "blob:",
+                "data:",
+                "https://res.cloudinary.com/drhk33p6k/", //SHOULD MATCH YOUR CLOUDINARY ACCOUNT! 
+                "https://images.unsplash.com/",
+            ],
+            fontSrc: ["'self'", ...fontSrcUrls],
+        },
+    })
+);
+
 
 app.use((req, res, next) => {
     console.log(req.method, req.path);
@@ -47,6 +104,19 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodoverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(sanitizeV5({ replaceWith: '_' }));//to prevent mongo-injection attack
+
+//------------------------------
+//setting up mongo to store information about the session 
+//------------------------------
+const store = MongoStore.create({
+    mongoUrl: 'mongodb://localhost:27017/yelp-camp',
+    touchAfter: 24 * 60 * 60, //this is timr in seconds
+    crypto: {
+        secret: 'thisshouldbeabettersecret!'
+    }
+});
+//the session info in mongoDB has a TTL of 14 days prolly and it will be removed after that
 
 // ------------------------------
 // 1️.Session FIRST
@@ -57,7 +127,8 @@ const sessionConfig = {
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
-        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        //secure:true,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,//millisec
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
 };
