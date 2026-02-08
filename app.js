@@ -18,7 +18,7 @@ const reviewroutes = require('./Routes/reviewroutes.js');
 const authroutes = require('./Routes/authroutes.js');
 const { Cookie } = require('express-session');
 const session = require('express-session');
-const { MongoStore } = require('connect-mongo');
+const  MongoStore  = require('connect-mongo');
 const flash = require('connect-flash')
 const user = require('./models/user');
 const passport  = require('passport');
@@ -113,7 +113,7 @@ const store = MongoStore.create({
     mongoUrl: process.env.MongoDBURL,
     touchAfter: 24 * 60 * 60, //this is timr in seconds
     crypto: {
-        secret: 'thisshouldbeabettersecret!'
+        secret: process.env.SESSION_SECRET || 'thisshouldbeabettersecret'
     }
 });
 //the session info in mongoDB has a TTL of 14 days prolly and it will be removed after that
@@ -122,17 +122,19 @@ const store = MongoStore.create({
 // 1️.Session FIRST
 // ------------------------------
 const sessionConfig = {
-    secret: 'thisshouldbeabettersecret',
+    store, // <-- MongoStore so session persists in Atlas
+    secret: process.env.SESSION_SECRET || 'thisshouldbeabettersecret',
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        //secure:true,
-        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,//millisec
+        secure: process.env.NODE_ENV === 'production', // only true in prod
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
 };
 app.use(session(sessionConfig));
+
 // ------------------------------
 // 2. Flash NEXT
 // ------------------------------
@@ -165,6 +167,12 @@ app.use((req, res, next) => {
 app.use('/campgrounds', campgroundroutes);
 app.use('/campgrounds/:id/reviews', reviewroutes);
 app.use('/',authroutes);
+app.get('/test-session', (req, res) => {
+    res.send({
+        user: req.user,
+        session: req.session
+    });
+});
 
 
 //////////////////////////////////////////////////////

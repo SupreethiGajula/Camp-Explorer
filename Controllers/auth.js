@@ -7,7 +7,7 @@ module.exports.renderRegisterForm = (req,res)=>{
     res.render('users/register');
 }
 
-module.exports.registerUser = async(req,res)=>{
+module.exports.registerUser = async(req,res,next)=>{
     try{
     const {username,email,password} = req.body;
     const newUser = new user({username,email});
@@ -30,8 +30,10 @@ module.exports.renderloginForm = (req,res)=>{
 
 module.exports.loginUser = (req, res) => {
         req.flash('success', `Welcome back ${req.user.username} !!`);
-        const redirectUrl = res.locals.returnTo || '/campgrounds'; // update this line to use res.locals.returnTo now
+        const redirectUrl = req.session.returnTo || '/campgrounds'; // update this line to use res.locals.returnTo now
+        delete req.session.returnTo;
         res.redirect(redirectUrl);
+
     }
 
 
