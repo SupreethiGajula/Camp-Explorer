@@ -5,6 +5,7 @@ const sanitizeV5 = require('./Utils/mongoSanitizeV5.js');
 
 const express = require('express');
 const app = express();
+app.set('trust proxy', 1);
 app.set('query parser', 'extended');
 const path = require('path');
 const mongoose = require('mongoose'); 
@@ -180,11 +181,7 @@ app.get('/test-session', (req, res) => {
 
 
 
-const port = process.env.PORT || 3000;
 
-app.listen(port, () => {
-    console.log(`Serving on port ${port}`);
-});
 app.get('/',(req,res)=>{
     res.render('campgrounds/home');
 })
@@ -199,5 +196,11 @@ app.use((err, req, res, next) => {
     const {statusCode = 500} = err;
     if(!err.message) err.message = "something went wrong"
     res.status(statusCode).render('error',{err});
+});
+
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+    console.log(`Serving on port ${port}`);
 });
 //////////////////////////////////////////////
