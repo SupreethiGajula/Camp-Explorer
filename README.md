@@ -1,7 +1,7 @@
-# YelpCamp Project
+# Camp Explorer Project
 
 ## Overview
-YelpCamp is a full-stack web application where users can create, view,
+Camp Explorer is a full-stack web application where users can create, view,
 review, and manage campgrounds.
 
 ## Tech Stack
