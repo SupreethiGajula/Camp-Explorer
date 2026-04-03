@@ -5,7 +5,7 @@ const sanitizeV5 = require('./Utils/mongoSanitizeV5.js');
 
 const express = require('express');
 const app = express();
-app.set('trust proxy', 1);
+//app.set('trust proxy', 1);
 app.set('query parser', 'extended');
 const path = require('path');
 const mongoose = require('mongoose'); 
@@ -129,10 +129,10 @@ const sessionConfig = {
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // only true in prod
+        secure: process.env.NODE_ENV === 'production', // only true in prod for local set false
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
         maxAge: 1000 * 60 * 60 * 24 * 7,
-        sameSite: 'none' 
+        sameSite: 'lax' 
     }
 };
 app.use(session(sessionConfig));
