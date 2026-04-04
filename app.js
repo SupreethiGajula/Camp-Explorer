@@ -5,7 +5,7 @@ const sanitizeV5 = require('./Utils/mongoSanitizeV5.js');
 
 const express = require('express');
 const app = express();
-//app.set('trust proxy', 1);
+app.set('trust proxy', 1);
 app.set('query parser', 'extended');
 const path = require('path');
 const mongoose = require('mongoose'); 
