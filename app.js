@@ -188,7 +188,6 @@ app.get('/',(req,res)=>{
 
 
 
-
 app.all(/(.*)/,(req,res,next)=>{//you could do this app.all('*',....) but you will get an error about regexp so modified accordingly
     next(new ExpressError('Page Not Found',404));
 })
