@@ -3,7 +3,6 @@ const {cloudinary} = require('../CloudConfig');
 const maptilerClient = require('@maptiler/client');
 
 
-
 module.exports.index = async (req,res)=>{
     const campgrounds = await Campground.find();
     res.render('campgrounds/index',{campgrounds});
@@ -31,7 +30,7 @@ module.exports.createNewCampground = async (req,res,next)=>{
     await campground.save();
     console.log(campground);
     req.flash('success','Successfully created a new campground');
-    console.log(`campground added - ${campground.title}`);
+    //console.log(`campground added - ${campground.title}`);
     res.redirect(`/campgrounds/${campground._id}`);
 }
 module.exports.showCampground = async(req,res)=>{

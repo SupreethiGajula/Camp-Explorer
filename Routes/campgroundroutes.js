@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { campgroundSchema } = require('../schemas.js');//validation schema only
+const { campgroundSchema } = require('../schemas.js');// Backend validation schema only
 const catchAsync = require('../Utils/catchAsync');
 const Campground = require('../models/campground');
 const ExpressError = require('../Utils/ExpressError');
